@@ -83,9 +83,257 @@ int main ()
 
     
 ----------------------------------------------------
-
+    Brute force string matching
 ----------------------------------------------------
 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+int StringMatch (char text[], char pattern[])
+{
+  int i, j, m, n;
+  n = strlen (text);
+  m = strlen (pattern);
+  for (i = 0; i <= n - m; i++)
+	{
+	  j = 0;
+	  while (j < m && tolower (text[i + j]) == tolower (pattern[j]))
+		{
+		  j++;
+		}
+	  if (j == m)
+		{
+		  return i + 1;
+		}
+	}
+  return -1;
+}
+
+int main ()
+{
+  char text[100], pattern[25];
+  int pos;
+  printf ("Enter the text : \n");
+  gets (text);
+  printf ("Enter the pattern :\n");
+  gets (pattern);
+  pos = StringMatch (text, pattern);
+  if (pos != -1)
+	printf ("The pattern %s is found at position %d\n", pattern, pos);
+  else
+	printf ("Pattern Not Found!!");
+  return 0;
+}
+
+
+
+    
+
+---------------------------------------------------
+		  Binary search
+----------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+
+int binarySearch (int a[], int n, int key)
+{
+  int low = 0, mid, high = n - 1;
+  while (low <= high)
+	{
+	  mid = (low + high) / 2;	
+	  if (a[mid] == key)
+		return mid;
+	  if (key < a[mid])
+		high = mid - 1;		
+	  else
+		low = mid + 1;			
+	}
+  return -1;
+}
+
+int main ()
+{
+  int n, key, i;
+  printf ("Enter the number of elements : ");
+  scanf ("%d", &n);
+  int a[n];
+  printf ("Enter %d elements in non-decreasing order : \n", n);
+  for (i = 0; i < n; i++)
+	scanf ("%d", &a[i]);
+  printf ("Enter the key element \n");
+  scanf ("%d", &key);
+  i = binarySearch (a, n, key);
+  if (i == -1)
+	printf ("Key element is not found!");
+  else
+	printf ("%d is present at position %d ", key, i + 1);
+  return 0;
+}
+
+
+
+
+
+    
+----------------------------------------------------
+Merge sort
+----------------------------------------------------
+	  
+#include <stdio.h>
+#include <stdlib.h>
+void Merge (int b[], int c[], int a[], int p, int q)
+{
+  int i = 0, j = 0, k = 0;
+  while (i < p && j < q)		//whether any subarray b or c is exhausted
+	{
+	  if (b[i] <= c[j])
+		{
+		  a[k] = b[i];
+		  i++;
+		}
+	  else
+		{
+		  a[k] = c[j];
+		  j++;
+		}
+	  k++;
+	}
+  if (i == p)
+	{
+	  while (j < q && k < (p + q))
+		{
+		  a[k] = c[j];
+		  j++;
+		  k++;
+		}
+	}
+  else
+	{
+	  while (i < p && k < (p + q))
+		{
+		  a[k] = b[i];
+		  k++;
+		  i++;
+		}
+	}
+}
+
+void mergeSort (int n, int a[])
+{
+  if (n > 1)
+	{
+	  int i, j, len;
+	  len = n / 2;
+	  int b[len], c[n - len];	//divide array into two subarrays of equal parts
+	  for (i = 0, j = 0; i < len && j < len; i++, j++)
+		{
+		  b[j] = a[i];
+		}
+	  for (i = len, j = 0; i < n && j < n - len; i++, j++)
+		{
+		  c[j] = a[i];
+		}
+	  mergeSort (len, b);
+	  mergeSort (n - len, c);
+	  Merge (b, c, a, len, n - len);
+	}
+}
+
+int main ()
+{
+  int i, n;
+  printf ("Enter the number of elements : ");
+  scanf ("%d", &n);
+  int a[n];
+  printf ("Enter %d elements :\n", n);
+  for (i = 0; i < n; i++)
+	scanf ("%d", &a[i]);
+  printf ("Array before sorting:\n");
+  for (i = 0; i < n; i++)
+	printf ("\t%d", a[i]);
+  mergeSort (n, a);
+  printf ("\nArray after sorting:\n");
+  for (i = 0; i < n; i++)
+	printf ("\t%d", a[i]);
+  return 0;
+}
+
+
+
+----------------------------------------------------
+      6.Quick sort
+----------------------------------------------------
+
+#include <stdio.h>
+#include <stdlib.h>
+int HoarePartition (int a[], int l, int r)
+{
+  int p, i, j, temp;
+  p = a[l];
+  i = l;
+  j = r + 1;
+  do						
+	{
+	  do
+		{
+		  i++;
+		}
+	  while (a[i] < p && i <= r);
+	  do
+		{
+		  j--;
+		}
+	  while (a[j] > p);
+	  if (i <= r)
+		{
+		  temp = a[i];
+		  a[i] = a[j];
+		  a[j] = temp;
+		}
+	}
+  while (i < j);
+  if (i <= r)					//Undo unnecessary swap
+	{
+	  temp = a[i];
+	  a[i] = a[j];
+	  a[j] = temp;
+	}
+  temp = a[l];					
+  a[l] = a[j];
+  a[j] = temp;
+  return j;
+}
+
+void QuickSort (int a[], int l, int r)
+{
+  if (l < r)
+	{
+	  int s = HoarePartition (a, l, r);	
+	  QuickSort (a, l, s - 1);
+	  QuickSort (a, s + 1, r);	
+	}
+}
+
+int main ()
+{
+  int n, i;
+  printf ("Enter the number of elements : ");
+  scanf ("%d", &n);
+  int a[n];
+  printf ("Enter %d elements:\n", n);
+  for (i = 0; i < n; i++)
+	scanf ("%d", &a[i]);
+  printf ("\nArray before sorting:\n");
+  for (i = 0; i < n; i++)
+	printf ("\t%d", a[i]);
+  QuickSort (a, 0, n - 1);		//Quicksort(a[l,..,r])
+  printf ("\nArray after sorting:\n");
+  for (i = 0; i < n; i++)
+	printf ("\t%d", a[i]);
+  return 0;
+}
 
 
 
@@ -93,39 +341,109 @@ int main ()
     
 
 ----------------------------------------------------
-
+7.Insertion sort
 ----------------------------------------------------
 
+#include <stdio.h>
+#include <stdlib.h>
+
+void InsertionSort(int a[], int n)
+{
+    int i, j, v;
+    for (i = 1; i < n; i++)
+    {
+        v = a[i];
+        j = i - 1;
+        while (j >= 0 && a[j] > v)
+        {
+            a[j + 1] = a[j];
+            j--;
+        }
+        a[j + 1] = v;
+    }
+}
+
+int main()
+{
+    int i, n;
+    printf("Enter the value of n: ");
+    scanf("%d", &n);
+    int a[n];
+    printf("Enter %d elements:\n", n);
+    for (i = 0; i < n; i++)
+        scanf("%d", &a[i]);
+    printf("Array before sorting:\n");
+    for (i = 0; i < n; i++)
+        printf("\t%d", a[i]);
+    InsertionSort(a, n);
+    printf("\nArray after sorting:\n");
+    for (i = 0; i < n; i++)
+        printf("\t%d", a[i]);
+    return 0;
+}
 
 
 
 
     
 ----------------------------------------------------
-
+8.Depth First Search (DFS) graph traversal
 ----------------------------------------------------
 
+#include <stdio.h>
+#include <stdlib.h>
+int count = 0;
+int v, e;
+int visited[20], mat[20][20];
+void dfs (int w)
+{
+  int j;
+  count++;
+  visited[w] = count;			//Mark vertex w as visited
+  printf ("%d(%d)\t", w, visited[w]);
+  for (j = 1; j <= v; j++)
+	if (mat[w][j] == 1 && visited[j] == 0)
+	  dfs (j);
+}
 
+void DFS ()							//To ensure all the vertices are visited
+{
+  int i;
+  for (i = 1; i <= v; i++)
+	{
+	  if (visited[i] == 0)
+		dfs (i);
+	}
+}
 
-----------------------------------------------------
+int main ()
+{
+  int i;
+  int v1, v2, ch;
+  printf
+	("Select the type of Graph:\n\t> 1.Directed Graph\n\t> 2.Undirected Graph\n");
+  scanf ("%d", &ch);
+  if (ch != 1 && ch != 2)
+	{
+	  printf ("Invalid option !!");
+	  return 0;
+	}
+  printf ("Enter the number of vertices : ");
+  scanf ("%d", &v);
+  printf ("Enter the number of edges : ");
+  scanf ("%d", &e);
+  printf ("Enter %d edges one by one :\n", e);
+  for (i = 1; i <= e; i++)
+	{
+	  printf ("Edge-%d : ", i);
+	  scanf ("%d%d", &v1, &v2);
+	  if (ch == 1)
+		mat[v1][v2] = 1;		//Directed graph
+	  else
+		mat[v1][v2] = mat[v2][v1] = 1;	//Undirected graph
+	}
+  printf ("\nOrder of vertices processed:\n");
+  DFS ();
+  return 0;
+}
 
-----------------------------------------------------
-
-
-
-
-
-    
-
-----------------------------------------------------
-
-----------------------------------------------------
-
-
-
-
-
-    
-----------------------------------------------------
-
-----------------------------------------------------
